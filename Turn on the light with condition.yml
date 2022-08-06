@@ -1,0 +1,84 @@
+blueprint:
+  name: Turn on light with multi condition
+  description: Turn a light on and off based on detected motion & condition
+  domain: automation
+  input:
+    motion_sensor:
+      name: Motion Sensor
+      description: A sensor that detect motion
+      selector:
+        entity:
+        domain: binary_sensor
+        multiple: false
+    light:
+      name: Light
+      description: A light that is turned on and off
+      selector:
+        entity:
+        domain: light
+        multiple: false
+    duration:
+      name: Duration
+      description: How long the light should stay on for, after motion is detected,
+         before turnning off (defaults 30 seconds)
+      default: 0:00:30
+    time_after:
+      name: Time After
+      description: Turn on light after time frame (default 6pm)
+      default: '18:00:00'
+    time_before:
+      name: Time Before
+      description: Turn on the light before time farme (default 3am)
+      default: '03:00:00'
+trigger:
+  - platform: state
+    entity_id: !input motion_sensor
+    id: Sensor 1
+    from: "on"
+    to: "off"
+  - platform: state
+    entity_id: !input motion_sensor
+    id: Sensor 2
+    from: "off"
+    to: "on"
+condition:
+  - condition: time
+    before: !input time_before
+    after: !input time_after
+    weekday:
+      - sun
+      - sat
+      - fri
+      - thu
+      - wed
+      - tue
+      - mon
+action:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: !input light
+            state: "off"
+        sequence:
+          - service: light.turn_on
+            data: {}
+            target:
+              area_id: living_room
+              entity_id: !input light
+          - wait_for_trigger:
+              - platform: state
+                entity_id: !input motion_sensor
+                from: "on"
+                to: "off"
+          - service: light.turn_off
+            data: {}
+            target:
+              area_id: living_room
+              entity_id: !input light
+    default:
+      - service: light.turn_on
+        data: {}
+        target:
+          area_id: living_room
+          entity_id: !input light
+mode: single
