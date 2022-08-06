@@ -8,15 +8,15 @@ blueprint:
       description: A sensor that detect motion
       selector:
         entity:
-        domain: binary_sensor
-        multiple: false
+          domain: binary_sensor
+          multiple: false
     light:
       name: Light
       description: A light that is turned on and off
       selector:
         entity:
-        domain: light
-        multiple: false
+          domain: light
+          multiple: false
     duration:
       name: Duration
       description: How long the light should stay on for, after motion is detected,
