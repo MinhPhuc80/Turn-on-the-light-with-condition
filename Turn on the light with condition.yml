@@ -33,6 +33,7 @@ blueprint:
 trigger:
   - platform: state
     entity_id: !input motion_sensor
+    for: !input duration
     id: Sensor 1
     from: "on"
     to: "off"
@@ -81,4 +82,8 @@ action:
         target:
           area_id: living_room
           entity_id: !input light
+variables:
+  motion: !input motion_sensor
+  light: !input light
+  mode: '{{ states(motion) }}'
 mode: single
